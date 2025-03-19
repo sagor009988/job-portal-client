@@ -1,3 +1,4 @@
+import axios from "axios";
 import Lottie from "lottie-react";
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -6,44 +7,45 @@ import loginLottie from "../assets/register.json";
 import useAuth from "../hooks/useAuth";
 
 const Login = () => {
-    const [error, setError] = useState("");
-    const {loading,loginUser}=useAuth()
-    const navigate=useNavigate()
-    const location=useLocation()
-   
-    const formLocation=location?.state||"/";
+  const [error, setError] = useState("");
+  const { loading, setLoading, loginUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const handleLogin=e=>{
-        e.preventDefault();
-        const form = e.target;
-        const email = form.email.value;
-        const password = form.password.value;
-        console.log(email,password);
-        loginUser(email,password)
-        .then(result=>{
-            console.log(result.user);
-            // navigate for private route
-            
-                navigate(formLocation)
-             if(result.user.metadata.createdAt){
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "User login successFully!!!!",
-                            showConfirmButton: false,
-                            timer: 1000
-                          });
-                    }
-            
-        })
-        .catch(err=>{
-            console.log(err.code);
-            setError(err.message)
-            
-        })
-        setError('')
-        
-    }
+  const formLocation = location?.state || "/";
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+    console.log(email, password);
+    loginUser(email, password)
+      .then((result) => {
+        console.log(result.user);
+
+        // navigate for private rout
+        navigate(formLocation);
+        if (result.user.metadata.createdAt) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "User login successFully!!!!",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err.code);
+        setError(err.message);
+      });
+    setError("");
+  };
+  if (loading) {
+    return <h1>login..............</h1>;
+  }
   return (
     <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
